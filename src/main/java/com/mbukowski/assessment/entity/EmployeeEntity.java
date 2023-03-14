@@ -1,7 +1,6 @@
 package com.mbukowski.assessment.entity;
 
 import lombok.*;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -39,10 +38,6 @@ public class EmployeeEntity {
     @JoinColumn(name = "Stanowisko")
     private PositionEntity positionEntity;
 
-//    @OneToMany
-//    @JoinColumn(name = "Stanowisko")
-//    private List<PositionEntity> positions;
-
     public EmployeeEntity(String name, String surname, String email, Integer phoneNumber, LocalDate dateOfEmployment, BigDecimal salary, AddressEntity addressEntity, DepartmentEntity departmentEntity, PositionEntity positionEntity) {
         this.name = name;
         this.surname = surname;
@@ -55,18 +50,4 @@ public class EmployeeEntity {
         this.positionEntity = positionEntity;
     }
 
-    @Override
-    public String toString() {
-        return "EmployeeEntity{" +
-                "name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                ", email='" + email + '\'' +
-                ", phoneNumber=" + phoneNumber +
-                ", dateOfEmployment=" + dateOfEmployment +
-                ", salary=" + salary +
-                ", addressEntity=" + addressEntity +
-                ", departmentEntity=" + departmentEntity +
-                ", positionEntity=" + positionEntity +
-                '}';
-    }
 }
