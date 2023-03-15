@@ -1,5 +1,6 @@
 package com.mbukowski.assessment.service;
 
+import com.mbukowski.assessment.DTO.AverageSalaryByPositionAndSeniorityOfEmployeesDTO;
 import com.mbukowski.assessment.DTO.EmployeeDTO;
 import com.mbukowski.assessment.entity.AddressEntity;
 import com.mbukowski.assessment.entity.DepartmentEntity;
@@ -11,8 +12,15 @@ import com.mbukowski.assessment.repository.EmployeeRepository;
 import com.mbukowski.assessment.repository.PositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
@@ -133,6 +141,69 @@ public class EmployeeService {
         employeeEntityWithUpdatedData.getAddressEntity().setId(IdAddressEntityWhichIsRequiredToUpdatedNewData);
         addressRepository.save(employeeEntityWithUpdatedData.getAddressEntity());
         return employeeRepository.save(employeeEntityWithUpdatedData);
+    }
+
+    private Integer getDifferenceBetweenDateOfEmploymentAndNowInYears(LocalDate dateOfEmployment){
+        Period period = Period.between(dateOfEmployment, LocalDate.now());
+        double sum = period.getYears()*365 + period.getMonths()*30 + period.getDays();
+        return (int)Math.round(sum/365);
+    }
+
+    private List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO>
+    convertListOfEmployeeEntitiesOnListOfAverageSalaryByPositionAndSeniorityOfEmployeesDTO(List<EmployeeEntity> listOftEmployeeEntities){
+        List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO> listOfEmployeesFromDBConvertedToTargetDTO = new ArrayList<>();
+
+        for(EmployeeEntity employeeEntityUnit : listOftEmployeeEntities){
+            listOfEmployeesFromDBConvertedToTargetDTO.add(new AverageSalaryByPositionAndSeniorityOfEmployeesDTO(
+                    employeeEntityUnit.getPositionEntity().getJobName(),
+                    getDifferenceBetweenDateOfEmploymentAndNowInYears(employeeEntityUnit.getDateOfEmployment()),
+                    employeeEntityUnit.getSalary()
+            ));
+        }
+        return listOfEmployeesFromDBConvertedToTargetDTO;
+    }
+
+    private Map<String, List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO>>
+    groupListOfAverageSalaryByPositionAndSeniorityOfEmployeesDTOByJobName(List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO> list){
+        return list
+                .stream()
+                .collect(Collectors.groupingBy(AverageSalaryByPositionAndSeniorityOfEmployeesDTO::getJobName));
+    }
+
+    /*
+    the method requires breaking down into smaller pieces
+    */
+    private List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO>
+    getGroupedListsOfAverageSalaryByPositionAndSeniorityOfEmployeesDTOByJobNameAndReturnListOfAverageSalariesByPositionAndSeniorityOfEmployeesDTO(Map<String, List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO>> groupedByJobName){
+        List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO> listOfResults = new ArrayList<>();
+
+        for (Map.Entry<String, List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO>> entryByJobName : groupedByJobName.entrySet()) {
+            List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO> listForOneJobName = entryByJobName.getValue();
+            Map<Integer, List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO>> groupBySeniorityForSpecifiedOneJobName = listForOneJobName
+                    .stream()
+                    .collect(Collectors.groupingBy(AverageSalaryByPositionAndSeniorityOfEmployeesDTO::getSeniority));
+            for(Map.Entry<Integer, List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO>> entryBySeniority :groupBySeniorityForSpecifiedOneJobName.entrySet()){
+                List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO> listGroupedByJobNameAndSeniority = entryBySeniority.getValue();
+                BigDecimal sumOfAllSalariesForOneSpecifiedJobNameAndSpecifiedSeniority = listGroupedByJobNameAndSeniority
+                        .stream()
+                        .map(AverageSalaryByPositionAndSeniorityOfEmployeesDTO::getAverageSalary)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                long numberOfAllSalariesForOneSpecifiedJobNameAndSpecifiedSeniority = listGroupedByJobNameAndSeniority.stream().count();
+                BigDecimal averageOfSalariesForOneSpecifiedJobNameAndSpecifiedSeniority = sumOfAllSalariesForOneSpecifiedJobNameAndSpecifiedSeniority
+                        .divide(new BigDecimal(numberOfAllSalariesForOneSpecifiedJobNameAndSpecifiedSeniority), 2);
+                listGroupedByJobNameAndSeniority.get(0).setAverageSalary(averageOfSalariesForOneSpecifiedJobNameAndSpecifiedSeniority);
+                listOfResults.add(listGroupedByJobNameAndSeniority.get(0));
+            }
+        }
+        return listOfResults;
+    }
+
+    public List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO> getAverageSalariesByPositionsAndSeniorityForAllEmployeesInDB(List<EmployeeEntity> list){
+        List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO> listOfAllEmployeesFromDBConvertedToTargetDTO =
+                convertListOfEmployeeEntitiesOnListOfAverageSalaryByPositionAndSeniorityOfEmployeesDTO(list);
+        Map<String, List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO>> groupByJobName =
+                groupListOfAverageSalaryByPositionAndSeniorityOfEmployeesDTOByJobName(listOfAllEmployeesFromDBConvertedToTargetDTO);
+        return getGroupedListsOfAverageSalaryByPositionAndSeniorityOfEmployeesDTOByJobNameAndReturnListOfAverageSalariesByPositionAndSeniorityOfEmployeesDTO(groupByJobName);
     }
 
 }

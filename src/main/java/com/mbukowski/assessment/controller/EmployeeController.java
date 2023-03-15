@@ -1,5 +1,6 @@
 package com.mbukowski.assessment.controller;
 
+import com.mbukowski.assessment.DTO.AverageSalaryByPositionAndSeniorityOfEmployeesDTO;
 import com.mbukowski.assessment.DTO.EmployeeDTO;
 import com.mbukowski.assessment.entity.AddressEntity;
 import com.mbukowski.assessment.entity.EmployeeEntity;
@@ -10,6 +11,8 @@ import com.mbukowski.assessment.repository.PositionRepository;
 import com.mbukowski.assessment.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/employee")
@@ -24,6 +27,12 @@ public class EmployeeController {
     DepartmentRepository departmentRepository;
     @Autowired
     EmployeeService employeeService;
+
+    @GetMapping("/average")
+    List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO> averageSalariesByPositionsAndSeniorityForAllEmployeesInDB(){
+        List<EmployeeEntity> allEmployeesFromDB = employeeRepository.findAll();
+        return employeeService.getAverageSalariesByPositionsAndSeniorityForAllEmployeesInDB(allEmployeesFromDB);
+    }
 
     @GetMapping("/{id}")
     public EmployeeEntity getEmployeeEntityById(@PathVariable Long id) {
