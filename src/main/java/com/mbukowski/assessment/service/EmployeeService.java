@@ -206,4 +206,9 @@ public class EmployeeService {
         return getGroupedListsOfAverageSalaryByPositionAndSeniorityOfEmployeesDTOByJobNameAndReturnListOfAverageSalariesByPositionAndSeniorityOfEmployeesDTO(groupByJobName);
     }
 
+    public EmployeeEntity saveEmployeeEntityInDB(EmployeeEntity employeeEntity){
+        addressRepository.save(employeeEntity.getAddressEntity());
+        return employeeRepository.save(employeeEntity);
+    }
+
 }
