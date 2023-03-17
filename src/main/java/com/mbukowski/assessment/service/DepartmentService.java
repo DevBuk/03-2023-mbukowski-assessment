@@ -9,6 +9,7 @@ import com.mbukowski.assessment.repository.DepartmentRepository;
 import com.mbukowski.assessment.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -82,6 +83,8 @@ public class DepartmentService {
         return departmentRepository.save(departmentEntity);
     }
 
-
+    public DepartmentEntity getDepartmentEntityByNameAndCity(String departmentName,String cityOfDepartment){
+        return departmentRepository.findDepartmentEntityByDepartmentNameAndAddressEntity_City(departmentName,cityOfDepartment);
+    }
 
 }

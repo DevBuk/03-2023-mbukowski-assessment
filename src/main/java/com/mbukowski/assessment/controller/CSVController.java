@@ -1,22 +1,15 @@
 package com.mbukowski.assessment.controller;
 
-import com.mbukowski.assessment.repository.EmployeeRepository;
 import com.mbukowski.assessment.service.CSVService;
-import com.mbukowski.assessment.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletResponse;
-
 
 @RestController
 @RequestMapping("/employee")
 public class CSVController {
-    @Autowired
-    EmployeeRepository employeeRepository;
-    @Autowired
-    EmployeeService employeeService;
+
     @Autowired
     CSVService csvService;
 

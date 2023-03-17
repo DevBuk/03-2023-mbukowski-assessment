@@ -12,6 +12,7 @@ import com.mbukowski.assessment.repository.EmployeeRepository;
 import com.mbukowski.assessment.repository.PositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -198,7 +199,7 @@ public class EmployeeService {
         return listOfResults;
     }
 
-    public List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO> getAverageSalariesByPositionsAndSeniorityForAllEmployeesInDB(List<EmployeeEntity> list){
+    private List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO> getAverageSalariesByPositionsAndSeniorityForAllEmployeesInDB(List<EmployeeEntity> list){
         List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO> listOfAllEmployeesFromDBConvertedToTargetDTO =
                 convertListOfEmployeeEntitiesOnListOfAverageSalaryByPositionAndSeniorityOfEmployeesDTO(list);
         Map<String, List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO>> groupByJobName =
@@ -213,6 +214,22 @@ public class EmployeeService {
     public EmployeeEntity addEmployeeEntityToDB(EmployeeDTO employeeDTO){
         EmployeeEntity employeeEntity = convertEmployeeDTOToEmployeeEntity(employeeDTO);
         return saveEmployeeEntityInDB(employeeEntity);
+    }
+
+    public List<AverageSalaryByPositionAndSeniorityOfEmployeesDTO> averageSalariesByPositionsAndSeniorityForAllEmployeesInDB(){
+        List<EmployeeEntity> allEmployeesFromDB = employeeRepository.findAll();
+        return getAverageSalariesByPositionsAndSeniorityForAllEmployeesInDB(allEmployeesFromDB);
+    }
+
+    public void deleteEmployee(Long id){
+        EmployeeEntity employeeEntityToDelete = getEmployeeEntityById(id);
+        AddressEntity addressEntityOfEmployeeToDelete = employeeEntityToDelete.getAddressEntity();
+        employeeRepository.delete(employeeEntityToDelete);
+        addressRepository.delete(addressEntityOfEmployeeToDelete);
+    }
+
+    public EmployeeEntity getEmployeeEntityByNameAndSurname(String nameOfEmployee,String surnameOfEmployee){
+        return employeeRepository.findEmployeeEntityByNameAndSurname(nameOfEmployee, surnameOfEmployee);
     }
 
 }
