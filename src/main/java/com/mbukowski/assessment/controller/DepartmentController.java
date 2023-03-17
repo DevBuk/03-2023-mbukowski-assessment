@@ -40,9 +40,7 @@ public class DepartmentController {
 
     @PostMapping("/addDepartment")
     public DepartmentEntity addDepartment(@RequestBody DepartmentDTO departmentDTO) {
-        DepartmentEntity departmentEntity = departmentService.convertDepartmentDTOToDepartmentEntity(departmentDTO);
-        addressRepository.save(departmentEntity.getAddressEntity());
-        return departmentRepository.save(departmentEntity);
+        return departmentService.addDepartmentEntityToDB(departmentDTO);
     }
 
     @PutMapping("/{id}")

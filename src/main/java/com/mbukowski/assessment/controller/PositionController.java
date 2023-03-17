@@ -24,9 +24,7 @@ public class PositionController {
 
     @GetMapping("/{id}")
     public PositionEntity getPositionById(@PathVariable Long id){
-        return positionRepository.findById(id).<NoSuchElementException>orElseThrow(() -> {
-            throw new NoSuchElementException("Not found position with id: " + id);
-        });
+        return positionService.getPositionEntityById(id);
     }
 
     @PostMapping("/addPosition")

@@ -210,5 +210,9 @@ public class EmployeeService {
         addressRepository.save(employeeEntity.getAddressEntity());
         return employeeRepository.save(employeeEntity);
     }
+    public EmployeeEntity addEmployeeEntityToDB(EmployeeDTO employeeDTO){
+        EmployeeEntity employeeEntity = convertEmployeeDTOToEmployeeEntity(employeeDTO);
+        return saveEmployeeEntityInDB(employeeEntity);
+    }
 
 }

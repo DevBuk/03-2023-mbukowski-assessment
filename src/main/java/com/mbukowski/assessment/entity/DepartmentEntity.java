@@ -29,11 +29,9 @@ public class DepartmentEntity {
     @JoinColumn(name = "lokalizacja")
     private AddressEntity addressEntity;
 
-    @OneToMany
-    private List<EmployeeEntity> employees = new ArrayList<>();
-
     public DepartmentEntity(String departmentName, AddressEntity addressEntity) {
         this.departmentName = departmentName;
         this.addressEntity = addressEntity;
     }
+
 }

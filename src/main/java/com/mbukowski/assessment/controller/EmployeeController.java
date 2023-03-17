@@ -49,9 +49,8 @@ public class EmployeeController {
 
     @PostMapping("/addEmployee")
     public EmployeeEntity addEmployee(@RequestBody EmployeeDTO employeeDTO) {
-        EmployeeEntity employeeEntity = employeeService.convertEmployeeDTOToEmployeeEntity(employeeDTO);
-        addressRepository.save(employeeEntity.getAddressEntity());
-        return employeeRepository.save(employeeEntity);
+        return employeeService.addEmployeeEntityToDB(employeeDTO);
+
     }
 
     @PutMapping("/{id}")

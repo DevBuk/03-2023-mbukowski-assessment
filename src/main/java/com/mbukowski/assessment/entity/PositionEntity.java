@@ -24,8 +24,6 @@ public class PositionEntity {
     @Length(max = 50)
     @Column(name = "nazwa")
     private String jobName;
-    @OneToMany
-    private List<EmployeeEntity> employees = new ArrayList<>();
 
     public PositionEntity(String jobName){
         this.jobName = jobName;

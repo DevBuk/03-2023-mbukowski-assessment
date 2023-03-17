@@ -25,7 +25,7 @@ public class DepartmentService {
     @Autowired
     AddressRepository addressRepository;
 
-    public DepartmentEntity convertDepartmentDTOToDepartmentEntity(DepartmentDTO departmentDTO){
+    private DepartmentEntity convertDepartmentDTOToDepartmentEntity(DepartmentDTO departmentDTO){
         return new DepartmentEntity(
                 departmentDTO.getDepartmentName(),
                 new AddressEntity(
@@ -75,5 +75,13 @@ public class DepartmentService {
         AddressEntity addressEntity = departmentEntity.getAddressEntity();
         addressRepository.delete(addressEntity);
     }
+
+    public DepartmentEntity addDepartmentEntityToDB(DepartmentDTO departmentDTO){
+        DepartmentEntity departmentEntity = convertDepartmentDTOToDepartmentEntity(departmentDTO);
+        addressRepository.save(departmentEntity.getAddressEntity());
+        return departmentRepository.save(departmentEntity);
+    }
+
+
 
 }
