@@ -1,7 +1,11 @@
 package com.mbukowski.assessment.entity;
 
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -17,10 +21,16 @@ public class EmployeeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank
+    @Length(max = 30)
     @Column(name = "imie")
     private String name;
+    @NotBlank
+    @Length(max = 30)
     @Column(name = "nazwisko")
     private String surname;
+    @Length(max = 80)
+    @Email
     private String email;
     @Column(name = "telefon")
     private Integer phoneNumber;

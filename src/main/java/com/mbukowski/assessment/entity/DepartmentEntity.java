@@ -1,9 +1,10 @@
 package com.mbukowski.assessment.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,8 @@ public class DepartmentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank
+    @Length(max = 30)
     @Column(name = "nazwa")
     private String departmentName;
 
@@ -26,7 +29,6 @@ public class DepartmentEntity {
     @JoinColumn(name = "lokalizacja")
     private AddressEntity addressEntity;
 
-    @JsonIgnore
     @OneToMany
     private List<EmployeeEntity> employees = new ArrayList<>();
 
